@@ -1,18 +1,10 @@
 import unittest
 
-from inline_markdown import split_nodes_delimiter, split_nodes_image, split_nodes_link
+from inline_markdown import split_nodes_delimiter, split_nodes_image, split_nodes_link, text_to_textnodes
 from textnode import TextNode, TextType
 
 
 class TestDelimiterSplit(unittest.TestCase):
-    test1 = TextNode("`This here` was a code block", TextType.NORMAL)
-    test2 = TextNode("This is another edge `code block`", TextType.NORMAL)
-    test3 = TextNode("This `code block` is simpler", TextType.NORMAL)
-    delim = "`"
-    new_nodes1 = split_nodes_delimiter([test1], delim, TextType.CODE)
-    new_nodes2 = split_nodes_delimiter([test2], delim, TextType.CODE)
-    new_nodes3 = split_nodes_delimiter([test3], delim, TextType.CODE)
-
     def test_single_delimiter(self):
         node = TextNode("This `code block` is simple", TextType.NORMAL)
         expected = [
@@ -388,7 +380,28 @@ class TestDelimiterSplit(unittest.TestCase):
             new_nodes,
         )
 
+    def test_text_to_textnodes_all(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        expected = [
+            TextNode("This is ", TextType.NORMAL),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.NORMAL),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.NORMAL),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.NORMAL),
+            TextNode("obi wan image", TextType.IMAGE,
+                     "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.NORMAL),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+        self.assertEqual(text_to_textnodes(text), expected)
+
+    def test_text_to_textnodes_text_only(self):
+        text = "This just text tho"
+        expected = [TextNode(text, TextType.NORMAL)]
+        self.assertEqual(text_to_textnodes(text), expected)
+
 
 if __name__ == "__main__":
-    # unittest.main()
-    TestDelimiterSplit().test_split_link_link_only()
+    unittest.main()
