@@ -15,9 +15,20 @@ class TestRegexExtraction(unittest.TestCase):
                     ("other link", "https://bing.com")]
         self.assertEqual(extract_markdown_links(text), expected)
 
+    def test_duplicate_links(self):
+        text = "This [link](https://google.com) is cool and this [link](https://google.com) is equally cool"
+        expected = [("link", "https://google.com"),
+                    ("link", "https://google.com")]
+        self.assertEqual(extract_markdown_links(text), expected)
+
     def test_no_links(self):
         text = "What link?"
         expected = []
+        self.assertEqual(extract_markdown_links(text), expected)
+
+    def test_link_only(self):
+        text = "[link](https://google.com)"
+        expected = [("link", "https://google.com")]
         self.assertEqual(extract_markdown_links(text), expected)
 
     def test_single_image(self):
@@ -36,12 +47,27 @@ class TestRegexExtraction(unittest.TestCase):
         expected = []
         self.assertEqual(extract_markdown_images(text), expected)
 
+    def test_image_only(self):
+        text = "![image](https://google.com)"
+        expected = [("image", "https://google.com")]
+        self.assertEqual(extract_markdown_images(text), expected)
+
     def test_mixed_links_images(self):
         text = "This ![image](https://google.com) is cool and this [link](https://bing.com) is too"
         expected_images = [("image", "https://google.com")]
         expected_links = [(("link", "https://bing.com"))]
         self.assertEqual(extract_markdown_images(text), expected_images)
         self.assertEqual(extract_markdown_links(text), expected_links)
+
+    def test_link_image_only(self):
+        text = "![image](https://google.com)"
+        expected = []
+        self.assertEqual(extract_markdown_links(text), expected)
+
+    def test_image_link_only(self):
+        text = "[link](https://google.com)"
+        expected = []
+        self.assertEqual(extract_markdown_images(text), expected)
 
 
 if __name__ == "__main__":

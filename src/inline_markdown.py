@@ -9,7 +9,7 @@ def extract_markdown_images(text):
 
 
 def extract_markdown_links(text):
-    link_pattern = r"[^!]\[(.*?)\]\((.*?)\)"
+    link_pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
     return extract_markdown(link_pattern, text)
 
 
@@ -17,7 +17,7 @@ def extract_markdown(pattern, text):
     return re.findall(pattern, text)
 
 
-def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType):
+def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
     new_nodes = []
 
     for node in old_nodes:
@@ -40,4 +40,46 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
                 else:
                     new_nodes.append(TextNode(s, text_type))
 
+    return new_nodes
+
+
+def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
+    new_nodes = []
+
+    for old_node in old_nodes:
+        images = extract_markdown_images(old_node.text)
+        if len(images) == 0:
+            new_nodes.append(old_node)
+            continue
+        current_text = old_node.text
+        for img_alt, img_url in images:
+            first_text, rest = current_text.split(
+                f"![{img_alt}]({img_url})", 1)
+            if first_text != "":
+                new_nodes.append(TextNode(first_text, old_node.text_type))
+            new_nodes.append(TextNode(img_alt, TextType.IMAGE, img_url))
+            current_text = rest
+        if rest != "":
+            new_nodes.append(TextNode(rest, old_node.text_type))
+    return new_nodes
+
+
+def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
+    new_nodes = []
+
+    for old_node in old_nodes:
+        links = extract_markdown_links(old_node.text)
+        if len(links) == 0:
+            new_nodes.append(old_node)
+            continue
+        current_text = old_node.text
+        for text, url in links:
+            first_text, rest = current_text.split(
+                f"[{text}]({url})", 1)
+            if first_text != "":
+                new_nodes.append(TextNode(first_text, old_node.text_type))
+            new_nodes.append(TextNode(text, TextType.LINK, url))
+            current_text = rest
+        if rest != "":
+            new_nodes.append(TextNode(rest, old_node.text_type))
     return new_nodes
