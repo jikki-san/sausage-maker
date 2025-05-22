@@ -5,8 +5,8 @@ from textnode import TextNode, TextType, text_node_to_html_node
 
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
-    def test_normal_conversion(self):
-        text_node = TextNode("Normal text", TextType.NORMAL)
+    def test_text_conversion(self):
+        text_node = TextNode("Normal text", TextType.TEXT)
         html_node = text_node_to_html_node(text_node)
         self.assertEqual(html_node.tag, None)
         self.assertEqual(html_node.value, "Normal text")
