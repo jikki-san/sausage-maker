@@ -1,10 +1,14 @@
 from textnode import TextNode, TextType
 
+from util import dir_copy
+
+
+SOURCE = "static"
+DEST = "public"
+
 
 def main():
-    test = TextNode("This is some anchor text",
-                    TextType.LINK, "https://google.com")
-    print(test)
+    dir_copy(SOURCE, DEST)
 
 
 if __name__ == "__main__":
