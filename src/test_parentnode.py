@@ -5,7 +5,16 @@ from htmlnode import LeafNode, ParentNode
 
 class TestParentNode(unittest.TestCase):
     def test_parent_node_repr(self):
-        pass
+        child = LeafNode("a", "Click here!", props={
+                         "href": "https://google.com"})
+        parent = ParentNode("p", [child], {"class": "red"})
+        expected = "ParentNode(p, [LeafNode(a, Click here!, {'href': 'https://google.com'})], {'class': 'red'})"
+        self.assertEqual(repr(parent), expected)
+
+    def test_parent_node_empty_children(self):
+        node = ParentNode("div", children=[])
+        expected = "<div></div>"
+        self.assertEqual(node.to_html(), expected)
 
     def test_parent_to_html_single(self):
         child = LeafNode("a", "Click here!", props={
