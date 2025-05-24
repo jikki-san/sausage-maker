@@ -1,6 +1,6 @@
 import unittest
 
-from block_markdown import BlockType, block_to_block_type, markdown_to_blocks
+from block_markdown import BlockType, block_to_block_type, extract_title, markdown_to_blocks
 
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -124,6 +124,16 @@ This is the same paragraph on a new line
     def test_block_to_block_type_paragraph(self):
         block = "Nothing special about this one"
         self.assertEqual(block_to_block_type(block), BlockType.PARAGRAPH)
+
+    def test_extract_title(self):
+        md = """
+# Title
+
+- This is a list
+- with items
+"""
+        expected = "Title"
+        self.assertEqual(extract_title(md), expected)
 
 
 if __name__ == "__main__":

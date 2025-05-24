@@ -54,3 +54,12 @@ def markdown_to_blocks(markdown: str) -> list[str]:
         blocks.append(raw_block)
 
     return blocks
+
+
+def extract_title(markdown: str) -> str:
+    blocks = markdown_to_blocks(markdown)
+    title_block = blocks[0]
+    hsh, title = title_block.split(" ", 1)
+    if hsh != "#":
+        raise ValueError("first line must be an h1 header")
+    return title
